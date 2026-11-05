@@ -1,16 +1,16 @@
 <!doctype html>
-<html lang="en">
+<html lang="sv">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DAG practice lab</title>
+<title>Öva på DAG:ar</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f6f5ef;color:#172f32;font:16px/1.5 system-ui,sans-serif}header{background:#193b3b;color:#fff;padding:17px max(5vw,24px);display:flex;align-items:center;gap:12px;font-weight:650}header svg{width:38px}main{max-width:1120px;margin:auto;padding:36px 24px}h1,h2{font-family:Georgia,serif;font-weight:normal;line-height:1.12}h1{font-size:clamp(40px,6vw,70px);margin:0}h2{font-size:32px;margin:14px 0 22px}p{max-width:68ch}nav{display:flex;gap:8px;flex-wrap:wrap;margin:26px 0}button{font:inherit;cursor:pointer;color:inherit;border:1px solid #9aa9a3;border-radius:6px;background:#fff;padding:10px 14px}nav button{border-radius:24px}button:hover,button:focus-visible{outline:2px solid #458477;outline-offset:2px}nav [aria-current=true],.next{background:#193b3b;color:white}article{display:grid;grid-template-columns:1fr 1fr;border:1px solid #bdc8bc;border-radius:12px;overflow:hidden;background:white}.panel,section{padding:clamp(20px,3vw,37px)}.panel{display:flex;flex-direction:column;background-color:#e6eee4;background-image:radial-gradient(#becbbb .9px,transparent .9px);background-size:16px 16px}.graph{width:100%;margin:auto;min-height:210px}small{font:600 12px/1.5 monospace;text-transform:uppercase;letter-spacing:.1em}.choice{display:flex;align-items:baseline;gap:12px;text-align:left;width:100%;margin-bottom:9px}.choice b{font:600 12px monospace;color:#476b61}.choice:disabled{cursor:default;color:#344846}.right{background:#dceedd;border-color:#3a7451}.wrong{background:#fae8df;border-color:#a76a50}.feedback{margin-top:14px}.feedback p{margin:5px 0 18px}details{font-size:14px}summary{cursor:pointer}.next{padding-inline:20px}@media(max-width:700px){article{grid-template-columns:1fr}.graph{max-height:210px;min-height:0}main{padding:24px 14px}}
 </style>
-<header><svg viewBox="0 0 40 30" aria-hidden="true"><path d="M6 22L20 7 34 22" stroke="#b6dfaa" fill="none" stroke-width="2"/><g fill="#b6dfaa"><circle cx="6" cy="22" r="4"/><circle cx="20" cy="7" r="4"/><circle cx="34" cy="22" r="4"/></g></svg>Causal inference lab</header>
-<main><h1>DAG practice</h1><p>Read a directed acyclic graph, choose an answer, then follow the arrows through the explanation. Each diagram shows the causal assumptions for that exercise.</p>
-<nav aria-label="Practice level"></nav><div id="exercise"></div></main>
+<header><svg viewBox="0 0 40 30" aria-hidden="true"><path d="M6 22L20 7 34 22" stroke="#b6dfaa" fill="none" stroke-width="2"/><g fill="#b6dfaa"><circle cx="6" cy="22" r="4"/><circle cx="20" cy="7" r="4"/><circle cx="34" cy="22" r="4"/></g></svg>Kausal inferens</header>
+<main><h1>Öva på DAG:ar</h1><p>En riktad acyklisk graf (DAG) visar vilka orsakssamband vi antar i en övning. Läs diagrammet och välj ett svar. Följ sedan pilarna i förklaringen.</p>
+<nav aria-label="Svårighetsgrad"></nav><div id="exercise"></div></main>
 <script>
-const levels=['Foundations','Intermediate','Advanced'];
+const levels=['Grundnivå','Mellannivå','Avancerad nivå'];
 const positions={
  pair:[[110,110],[310,110]],
  chain:[[48,110],[210,110],[372,110]],
@@ -21,15 +21,15 @@ const positions={
 };
 // Edge pairs index the nodes in the order given by labels.
 const lessons=[
- ['pair',['Rain','Wet soil'],[[0,1]],'What does the arrow from rain to wet soil mean?',['Wet soil causes rain.','Rain directly affects soil wetness in this model.','Rain always makes the soil wet.'],1,'The arrow starts at the proposed cause and points to its effect. It gives a direction without specifying the size or certainty of the effect.'],
- ['chain',['Training','Skill','Output'],[[0,1],[1,2]],'How does training affect output in this graph?',['Through skill.','Through a direct arrow to output.','Through a shared cause of training and output.'],0,'Trace Training → Skill → Output. Skill carries the effect along the chain, a role called mediation.'],
- ['triangle',['Sales','Heat','Swims'],[[1,0],[1,2]],'Ice cream sales and swims rise together. Which explanation fits?',['Swims cause sales.','Sales cause swims.','Heat is a common cause.'],2,'Follow Sales ← Heat → Swims. Hot weather affects both activities, so sales can predict swims even though neither causes the other here.'],
- ['triangle',['Rain','Wet path','Sprinkler'],[[0,1],[2,1]],'What role does the wet path play between rain and the sprinkler?',['Common cause','Collider','Mediator'],1,'Both arrowheads meet at Wet path. A shared effect is a collider. The path between its two causes is blocked until we condition on the collider or a descendant.'],
- ['triangle',['Training','Motivation','Output'],[[1,0],[1,2],[0,2]],'Which variable should you adjust for to estimate the total effect of training on output?',['Motivation','Output','None'],0,'Motivation opens a backdoor path, Training ← Motivation → Output. Comparing people with the same motivation blocks that path and preserves Training → Output.'],
- ['branch',['Skill','Admission','Funding','Enrolled'],[[0,1],[2,1],[1,3]],'What can happen if you study only enrolled students?',['The path between skill and funding stays blocked.','Enrollment becomes a common cause.','Skill and funding can become associated.'],2,'Admission is a collider of Skill and Funding. Selecting on Enrolled conditions on a consequence of admission, opening the path between the two causes.'],
- ['diamond',['Training','Skill','Output','Motivation'],[[0,1],[1,2],[3,0],[3,2]],'Which adjustment preserves the total effect of training on output?',['Adjust for skill and motivation.','Adjust for motivation alone.','Adjust for skill alone.'],1,'Block Training ← Motivation → Output by adjusting for motivation. Leave skill free to vary so the causal path Training → Skill → Output still contributes to the total effect.'],
- ['diamond',['Program','Selection','Outcome','Need'],[[0,1],[2,1],[3,0],[3,2],[0,2]],'After adjusting for need, what happens if you also restrict the analysis to selected people?',['Both noncausal paths are blocked.','The direct effect disappears.','A second noncausal path opens.'],2,'Adjusting for need blocks Program ← Need → Outcome. Restricting to selected people then opens Program → Selection ← Outcome. This can bias the estimate even though the original confounding path stays blocked.'],
- ['proxy',['Exposure','U','Outcome','Marker'],[[1,0],[1,2],[1,3]],'U is unmeasured. Does adjusting for its measured marker block confounding?',['No. The backdoor path still passes through U.','Yes. Every descendant of U blocks the path.','Yes. The marker is a collider.'],0,'Trace Exposure ← U → Outcome. Marker lies off that path. Conditioning on an ordinary imperfect marker gives information about U, but the graph does not imply that adjustment for Marker removes confounding.']
+ ["pair",["Regn","Markfuktighet"],[[0,1]],"Vad betyder pilen från regn till markfuktighet?",["Markfuktigheten påverkar om det regnar.","Regn påverkar markfuktigheten direkt i modellen.","Marken blir alltid blöt när det regnar."],1,"Pilen går från den antagna orsaken till det som påverkas. Här visar den att regn påverkar markfuktigheten. Hur mycket fuktigare marken blir framgår inte av pilen."],
+ ["chain",["Övning","Färdighet","Resultat"],[[0,1],[1,2]],"Hur påverkar övning resultatet enligt diagrammet?",["Genom att övningen påverkar färdigheten.","Genom en direkt pil till resultatet.","Genom en gemensam orsak till övning och resultat."],0,"Följ pilarna från övning via färdighet till resultat. Färdighet är en mediator, alltså ett mellanled som förmedlar effekten av övning."],
+ ["triangle",["Glassköp","Värme","Badbesök"],[[1,0],[1,2]],"Dagar då fler köper glass är det också fler som badar. Hur förklarar diagrammet sambandet?",["Fler badbesök leder till fler glassköp.","Fler glassköp leder till fler badbesök.","Värmen påverkar både glassköp och badbesök."],2,"Båda pilarna utgår från värme. När det är varmt köper fler glass och fler går och badar. Det kan ge ett samband mellan glassköp och badbesök även utan en pil mellan dem."],
+ ["triangle",["Regn","Blöt stig","Bevattning"],[[0,1],[2,1]],"Vilken roll har den blöta stigen på vägen mellan regn och bevattning?",["Gemensam orsak","Kolliderare (gemensam effekt)","Mediator"],1,"Båda pilspetsarna pekar mot den blöta stigen. Där möts två orsaker i en gemensam effekt, en kolliderare. Vägen är stängd, men om vi bara studerar tillfällen då stigen är blöt öppnar vi den."],
+ ["triangle",["Övning","Motivation","Resultat"],[[1,0],[1,2],[0,2]],"Vad bör du justera för om du vill skatta den totala effekten av övning på resultatet?",["Motivation","Resultat","Ingen av variablerna"],0,"Motivation påverkar både hur mycket en person övar och vilket resultat personen får. Motivation är därför en confounder. Genom att jämföra personer med samma motivation stänger du vägen Övning ← Motivation → Resultat. Den direkta pilen från övning till resultat finns kvar."],
+ ["branch",["Färdighet","Antagning","Studiestöd","Registrering"],[[0,1],[2,1],[1,3]],"Vad kan hända om du bara studerar registrerade studenter?",["Vägen mellan färdighet och studiestöd förblir stängd.","Registrering blir en gemensam orsak till färdighet och studiestöd.","Ett samband kan uppstå mellan färdighet och studiestöd."],2,"Färdighet och studiestöd påverkar båda antagningen. Antagningen påverkar sedan vilka som registrerar sig. När du väljer enbart registrerade studenter gör du ett urval utifrån en följd av kollideraren. Då öppnas vägen mellan färdighet och studiestöd."],
+ ["diamond",["Övning","Färdighet","Resultat","Motivation"],[[0,1],[1,2],[3,0],[3,2]],"Vad bör du justera för om du vill få med hela effekten av övning på resultatet?",["Både färdighet och motivation.","Enbart motivation.","Enbart färdighet."],1,"Justering för motivation stänger vägen Övning ← Motivation → Resultat. Färdighet är en mediator. Om du även justerar för färdighet stänger du den väg som förmedlar effekten av övning i diagrammet."],
+ ["diamond",["Insats","Urval","Utfall","Behov"],[[0,1],[2,1],[3,0],[3,2],[0,2]],"Du har justerat för behov. Vad händer om du sedan begränsar analysen till dem som valts ut?",["Båda vägarna som kan snedvrida skattningen stängs.","Den direkta effekten försvinner.","En annan väg öppnas och kan snedvrida skattningen."],2,"Justeringen för behov stänger vägen Insats ← Behov → Utfall. Men både insatsen och utfallet påverkar vilka som väljs ut. När du begränsar analysen till de utvalda öppnas vägen Insats → Urval ← Utfall."],
+ ["proxy",["Exponering","U","Utfall","Markör"],[[1,0],[1,2],[1,3]],"Du har mätt en markör för den gemensamma orsaken U. Räcker det att justera för markören för att stänga vägen via U?",["Nej, vägen via U är fortfarande öppen.","Ja, justering för vilken följd som helst av U stänger vägen.","Ja, markören är en kolliderare."],0,"Följ vägen Exponering ← U → Utfall. Markören ligger på en egen gren från U. En ofullständig markör kan ge information om U, men justering för markören stänger inte vägen genom den gemensamma orsaken."]
 ];
 const host=document.querySelector('#exercise'),nav=document.querySelector('nav');
 let current=0,answers=[];
@@ -41,12 +41,12 @@ function diagram(layout,labels,edges){
  }).join('');
  const nodes=points.map(([x,y],i)=>'<g transform="translate('+x+' '+y+')"><circle r="25" fill="#f9fcf1" stroke="#48665e" stroke-width="2"/><text text-anchor="middle" y="8" font-family="Georgia" font-style="italic" font-size="24">'+String.fromCharCode(65+i)+'</text><text y="46" text-anchor="middle" font-size="14" font-weight="650" stroke="#e6eee4" stroke-width="4" paint-order="stroke">'+labels[i]+'</text></g>').join('');
  const description=edges.map(([a,b])=>labels[a]+' → '+labels[b]).join(', ');
- return '<svg role="img" aria-label="'+description+'" class="graph" viewBox="0 0 420 275"><defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#48665e"/></marker></defs>'+lines+nodes+'</svg><details><summary>Read diagram as text</summary>'+description+'</details>';
+ return '<svg role="img" aria-label="'+description+'" class="graph" viewBox="0 0 420 275"><defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#48665e"/></marker></defs>'+lines+nodes+'</svg><details><summary>Visa diagrammet som text</summary>'+description+'</details>';
 }
 function render(){
  const [layout,labels,edges,question,choices,key,why]=lessons[current],level=Math.floor(current/3);
  [...nav.children].forEach((button,i)=>button.setAttribute('aria-current',String(i===level)));
- host.innerHTML='<article><div class="panel"><small>Causal diagram · '+String(current+1).padStart(2,'0')+'</small>'+diagram(layout,labels,edges)+'</div><section><small>'+levels[level]+' · '+(current%3+1)+' of 3</small><h2 tabindex="-1">'+question+'</h2><div id="choices"></div><div class="feedback" role="status"></div></section></article>';
+ host.innerHTML='<article><div class="panel"><small>Orsaksdiagram · '+String(current+1).padStart(2,'0')+'</small>'+diagram(layout,labels,edges)+'</div><section><small>'+levels[level]+' · '+(current%3+1)+' av 3</small><h2 tabindex="-1">'+question+'</h2><div id="choices"></div><div class="feedback" role="status"></div></section></article>';
  const chosen=answers[current];
  choices.forEach((choice,i)=>{
   const button=document.createElement('button');button.className='choice';button.innerHTML='<b>'+String.fromCharCode(65+i)+'</b>'+choice;
@@ -54,14 +54,14 @@ function render(){
   button.onclick=()=>{answers[current]=i;render();host.querySelector('.next').focus()};host.querySelector('#choices').append(button);
  });
  if(chosen!==undefined){
-  host.querySelector('.feedback').innerHTML='<strong>'+(chosen===key?'Correct.':'Correct answer: '+choices[key])+'</strong><p>'+why+'</p><button class="next">'+(current===8?'Finish practice':'Next diagram →')+'</button>';
+  host.querySelector('.feedback').innerHTML='<strong>'+(chosen===key?'Rätt!':'Rätt svar är '+choices[key])+'</strong><p>'+why+'</p><button class="next">'+(current===8?'Visa resultat':'Nästa diagram →')+'</button>';
   host.querySelector('.next').onclick=()=>{if(current<8)go(current+1);else finish()};
  }
 }
 function go(index){current=index;render();host.querySelector('h2').focus()}
 function finish(){
  const completed=answers.filter(Number.isInteger).length,score=answers.filter((answer,i)=>answer===lessons[i][5]).length;
- host.innerHTML='<section><h2 tabindex="-1">Practice summary</h2><p>You answered '+completed+' of 9 diagrams and got '+score+' correct.</p><button class="next">Start again</button></section>';
+ host.innerHTML='<section><h2 tabindex="-1">Ditt resultat</h2><p>Du besvarade '+completed+' av 9 frågor och fick '+score+' rätt.</p><button class="next">Börja om</button></section>';
  host.querySelector('h2').focus();host.querySelector('button').onclick=()=>{answers=[];go(0)};
 }
 levels.forEach((name,i)=>{const button=document.createElement('button');button.textContent=name;button.onclick=()=>go(i*3);nav.append(button)});
